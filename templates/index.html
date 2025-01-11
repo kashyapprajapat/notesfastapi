@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Notes 📝</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Notes 📝</a>
+        </div>
+      </nav>
+
+    <div class="container mt-4">
+      <h1>Add Your Notes...</h1>
+      <!-- Alert Box -->
+      <div id="alertBox" class="alert alert-success d-none" role="alert">
+        Note added successfully!
+      </div>
+
+      <form id="noteForm">
+        <div class="mb-3">
+          <label for="notetitle" class="form-label">Note Title</label>
+          <input type="text" class="form-control" id="notetitle" required>
+        </div>
+        <div class="mb-3">
+          <label for="notedescription" class="form-label">Note Description</label>
+          <textarea class="form-control" id="notedescription" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+
+    <div class="container mt-4">
+      <h4>Your Notes</h4>
+      <div id="notesContainer">
+        <!-- Notes will be displayed here -->
+      </div>
+    </div>
+
+    <script>
+      const apiUrl = "http://127.0.0.1:8000/notes"; // Change this to your FastAPI endpoint
+      
+      // Fetch and display all notes
+      async function fetchNotes() {
+        const response = await fetch(apiUrl);
+        const notes = await response.json();
+        const notesContainer = document.getElementById("notesContainer");
+
+        // Clear current notes
+        notesContainer.innerHTML = "";
+
+        if (notes.length === 0) {
+          notesContainer.innerHTML = "<p>No notes found. Add some notes above!</p>";
+          return;
+        }
+
+        notes.forEach((note) => {
+          const noteCard = `
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">${note.title}</h5>
+                <p class="card-text">${note.content}</p>
+              </div>
+            </div>`;
+          notesContainer.innerHTML += noteCard;
+        });
+      }
+
+      // Handle form submission
+      const noteForm = document.getElementById("noteForm");
+      noteForm.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent page reload
+
+        const title = document.getElementById("notetitle").value;
+        const content = document.getElementById("notedescription").value;
+
+        // Send POST request to add a new note
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title, content }),
+        });
+
+        if (response.ok) {
+          // Show success alert
+          const alertBox = document.getElementById("alertBox");
+          alertBox.classList.remove("d-none");
+
+          // Reset form and fetch updated notes
+          noteForm.reset();
+          fetchNotes();
+
+          // Hide alert after 3 seconds
+          setTimeout(() => {
+            alertBox.classList.add("d-none");
+          }, 3000);
+        } else {
+          alert("Failed to add note. Please try again.");
+        }
+      });
+
+      // Load notes on page load
+      fetchNotes();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  </body>
+</html>
