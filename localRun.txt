@@ -1,0 +1,4 @@
+step one open terminal and do this 
+==> PS F:\fastapimongo> kp_vertuial\Scripts\activate
+step two run this command in the terminal
+==>  PS F:\fastapimongo> uvicorn main:app --host 0.0.0.0 --port 8000

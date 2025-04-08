@@ -39,7 +39,7 @@ def upload_image_to_cloudinary(file: UploadFile):
 
 
 
-MONGODB_URI = "mongodb+srv://kashyap:kashyap14@cluster0.jp9de.mongodb.net/notes"
+MONGODB_URI = "mongodb://kashyap:kashyap14@cluster0.jp9de.mongodb.net/notes?retryWrites=true&w=majority"
 client = MongoClient(MONGODB_URI)
 db = client["notes"]  
 notes_collection = db["notes"]  
